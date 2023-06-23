@@ -1,11 +1,19 @@
 from flask import Flask
 from flask_socketio import SocketIO
-import requests
+from dotenv import load_dotenv
+from services.coins_services import get_coins, upload_coins
 import random
+import logging
+import os
+
+load_dotenv()
 
 app = Flask('__name__')
 
 socketio = SocketIO(app, cors_allowed_origins = '*')
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
+URL = os.getenv('URL_PRODUCTION') if os.getenv('ENV_PRODUCTION') else os.getenv('URL_DEVELOPMENT')
 
 @app.route('/')
 def index():
@@ -20,13 +28,7 @@ def generate_alert_price():
 
     while True:
         try:
-            token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InRlc3QiLCJleHAiOjE2ODc0NDQ1NDJ9.fq8cxu_1R7ctTk3BrLYAya_x1GsLZITLuo4Szte7RJU'
-            headers = {
-                'Authorization': f'Bearer {token}'
-            }
-
-            response = requests.get('http://localhost:3000/api/get_coins/', headers = headers)
-            json_data = response.json()
+            json_data = get_coins()
             if 'message' in json_data: raise ValueError(json_data['message'])
             quantity_coins = random.randint(1, 10)
             selected_coins = random.sample(json_data, quantity_coins)
@@ -47,9 +49,9 @@ def generate_alert_price():
 
                     list_prices_changed_data.append(prices_changed_data)
                 except ValueError as error:
-                    raise f'An error has occurred with current currencies data: {error}'
+                    logger.exception(f'An error occurred with current currencies data {error}')
 
-            requests.put('http://localhost:3000/api/upload_coins/', json = list_prices_changed_data, headers = headers)
+            upload_coins(list_prices_changed_data)
             socketio.emit('price_alert', list_prices_changed_data)
             socketio.sleep(10)
         except ValueError as error:
@@ -57,7 +59,7 @@ def generate_alert_price():
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Clien disconnected')
+    print('Client disconnected')
 
 if __name__ == '__main__' :
     socketio.start_background_task(generate_alert_price)
