@@ -3,6 +3,7 @@ from requests import get, put
 import os
 
 load_dotenv()
+
 token = os.getenv('PERMANENT_TOKEN')
 headers = {
     'Authorization': f'Bearer {token}'
