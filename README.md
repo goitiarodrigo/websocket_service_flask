@@ -6,3 +6,8 @@ Por email pasaré las credenciales propias del .env.
 ```javascript
   pip install -r requirements.txt
 ```
+
+Y luego de eso correr el proyecto ejecutando:
+```javascript
+  python app.py
+```
