@@ -16,4 +16,4 @@ COPY .env .
 
 EXPOSE 5000
 
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
+CMD ["gunicorn", "-w", "4" , "0.0.0.0:5000", "-b", "app:app"]
