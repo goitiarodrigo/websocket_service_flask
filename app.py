@@ -60,10 +60,6 @@ def generate_alert_price():
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')
-print(__name__, 'NAME!!')
 if __name__ == '__main__' :
     socketio.start_background_task(generate_alert_price)
     socketio.run(app, host='0.0.0.0', debug=True)
-if __name__ == 'app':
-    socketio.start_background_task(generate_alert_price)
-    socketio.run(app, host='0.0.0.0', debug=False)
