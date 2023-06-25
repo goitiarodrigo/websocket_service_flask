@@ -12,8 +12,6 @@ RUN pip install uwsgi
 
 COPY . .
 
-COPY .env .
-
 EXPOSE 5000
 
 CMD ["gunicorn", "-w", "4" , "0.0.0.0:5000", "-b", "app:app"]
