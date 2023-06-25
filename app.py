@@ -5,7 +5,6 @@ from services.coins_services import get_coins, upload_coins
 import random
 import logging
 import os
-import eventlet
 
 load_dotenv()
 
@@ -61,7 +60,7 @@ def generate_alert_price():
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')
-
+print(__name__, 'NAME!!')
 if __name__ == '__main__' :
     socketio.start_background_task(generate_alert_price)
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True)
